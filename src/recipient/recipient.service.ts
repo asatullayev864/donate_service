@@ -1,8 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateRecipientDto } from './dto/create-recipient.dto';
 import { UpdateRecipientDto } from './dto/update-recipient.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Recipient } from './models/recipient.model';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class RecipientService {
@@ -18,34 +19,80 @@ export class RecipientService {
     }
 
     const existsEmail = await this.recipientModel.findOne({ where: { email } });
-    if (email) {
+    if (existsEmail) {
       throw new BadRequestException("Email already exists on the network❌")
     }
     const existsName = await this.recipientModel.findOne({ where: { name } });
-    if (email) {
+    if (existsName) {
       throw new BadRequestException("Name already exists on the network❌")
     }
 
-    const newRecipient = await this.recipientModel.create(createRecipientDto);
+    const hashedPassword = await bcrypt.hash(password, 7);
+
+    const newRecipient = await this.recipientModel.create({
+      name,
+      full_name,
+      email,
+      password: hashedPassword,
+      address
+    });
     return newRecipient;
   }
 
-  async findAll() {
-    const recipient = await this.recipientModel.findAll();
-    if (!recipient) {
-      throw
+  async findAll(): Promise<Recipient[]> {
+    const recipients = await this.recipientModel.findAll();
+    if (recipients.length === 0) {
+      throw new NotFoundException("No data yet❌");
     }
+    return recipients;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} recipient`;
+  async findOne(id: number): Promise<Recipient> {
+    const recipient = await this.recipientModel.findOne({ where: { id } });
+    if (!recipient) {
+      throw new NotFoundException("No information found for this ID❌");
+    }
+    return recipient;
   }
 
-  update(id: number, updateRecipientDto: UpdateRecipientDto) {
-    return `This action updates a #${id} recipient`;
+  async update(id: number, updateRecipientDto: UpdateRecipientDto) {
+    const recipient = await this.recipientModel.findOne({ where: { id } });
+    if (!recipient) {
+      throw new NotFoundException("No information found for this ID❌");
+    }
+
+    const { name, email, currentPassword, new_password } = updateRecipientDto;
+    if (name) {
+      const existsName = await this.recipientModel.findOne({ where: { name } });
+      if (existsName && existsName.id !== id) {
+        throw new BadRequestException("Such a name is used❗️");
+      }
+    }
+    if (email) {
+      const existsEmail = await this.recipientModel.findOne({ where: { email } });
+      if (existsEmail && existsEmail.id !== id) {
+        throw new BadRequestException("This email is busy❗️");
+      }
+    }
+    if (currentPassword && new_password) {
+      const verifyPassword = await bcrypt.compare(currentPassword, recipient.password);
+      if (!verifyPassword) {
+        throw new UnauthorizedException("Password noto'g'ri");
+      }
+      const hashedPassword = await bcrypt.hash(new_password, 7);
+      updateRecipientDto.password = hashedPassword;
+    }
+
+    await this.recipientModel.update(updateRecipientDto, { where: { id } });
+    return await this.recipientModel.findOne({ where: { id } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} recipient`;
+  async remove(id: number) {
+    const recipient = await this.recipientModel.findOne({ where: { id } });
+    if (!recipient) {
+      throw new NotFoundException("No information found for this ID❌");
+    }
+    await this.recipientModel.destroy({ where: { id } });
+    return { message: "Recipient successfully deleted✅" };
   }
 }
