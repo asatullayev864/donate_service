@@ -9,6 +9,9 @@ import { SocialMediaModule } from './social_media/social_media.module';
 import { SocialMedia } from './social_media/models/social_media.model';
 import { RecipientSocialModule } from './recipient-social/recipient-social.module';
 import { RecipientSocial } from './recipient-social/models/recipient-social.model';
+import { AuthModule } from './auth/auth.module';
+import { AdminModule } from './admin/admin.module';
+import { Admin } from './admin/models/admin.model';
 
 @Module({
   imports: [
@@ -23,7 +26,7 @@ import { RecipientSocial } from './recipient-social/models/recipient-social.mode
       username: process.env.PG_USER,
       password: process.env.PG_PASSWORD,
       database: process.env.PG_DATABASE,
-      models: [Recipient, Card, SocialMedia, RecipientSocial],
+      models: [Recipient, Card, SocialMedia, RecipientSocial, Admin],
       autoLoadModels: true,
       logging: false,
       sync: { alter: true },
@@ -31,7 +34,9 @@ import { RecipientSocial } from './recipient-social/models/recipient-social.mode
     RecipientModule,
     CardModule,
     SocialMediaModule,
-    RecipientSocialModule
+    RecipientSocialModule,
+    AuthModule,
+    AdminModule
   ],
   controllers: [],
   providers: [],
