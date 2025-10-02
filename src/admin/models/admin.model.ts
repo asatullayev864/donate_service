@@ -82,7 +82,7 @@ export class Admin extends Model<Admin, IAdminAttr> {
     @Column({
         type: DataType.STRING,
         allowNull: false,
-        defaultValue: "admin",
+        defaultValue: "ADMIN",
     })
     declare role: string;
 }

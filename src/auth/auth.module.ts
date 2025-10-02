@@ -2,20 +2,27 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Admin } from '../admin/models/admin.model';
 import { SequelizeModule } from '@nestjs/sequelize';
+import { JwtStrategy } from './strategy/jwt.strategy';
+
 
 @Module({
   imports: [
     SequelizeModule.forFeature([Admin]),
     ConfigModule.forRoot({ isGlobal: true }),
-    JwtModule.register({
-      secret: process.env.SECRET_KEY,
-      signOptions: { expiresIn: process.env.SECRET_TIME }
-    })
+    JwtModule.registerAsync({
+      global: true,
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.get<string>('SECRET_KEY'),
+        signOptions: { expiresIn: configService.get<string>('SECRET_TIME') },
+      }),
+    }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy],   // 👈 Strategy ni provider sifatida qo‘shamiz
 })
 export class AuthModule { }

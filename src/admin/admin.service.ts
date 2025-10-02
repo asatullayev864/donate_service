@@ -8,18 +8,25 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class AdminService {
   constructor(
-    @InjectModel(Admin) private readonly adminModel: typeof Admin, // typeof bo‘lishi kerak
+    @InjectModel(Admin) private readonly adminModel: typeof Admin,
   ) { }
 
-  // Yangi admin yaratish
   async create(createAdminDto: CreateAdminDto): Promise<Admin> {
-    // Email unique tekshirish
     const exist = await this.adminModel.findOne({ where: { email: createAdminDto.email } });
     if (exist) {
       throw new BadRequestException('Bunday email bilan admin allaqachon mavjud');
     }
 
-    // Parolni hash qilish
+    const { role } = createAdminDto;
+    if (role) {
+      if (role === "SUPERADMIN") {
+        throw new BadRequestException("Iltimos role ni togri kiriting!");
+      }
+      const existsSuperAdmin = await this.adminModel.findOne({ where: { role } });
+      if (existsSuperAdmin) {
+        throw new BadRequestException("Super admin faqat bitta bolishi mumkin");
+      }
+    }
     const hashedPassword = await bcrypt.hash(createAdminDto.password, 7);
 
     const admin = await this.adminModel.create({
@@ -29,12 +36,10 @@ export class AdminService {
     return admin;
   }
 
-  // Barcha adminlarni olish
   async findAll(): Promise<Admin[]> {
     return this.adminModel.findAll();
   }
 
-  // ID bo‘yicha adminni olish
   async findOne(id: number): Promise<Admin> {
     const admin = await this.adminModel.findByPk(id);
     if (!admin) {
@@ -43,7 +48,6 @@ export class AdminService {
     return admin;
   }
 
-  // Adminni yangilash (parolni o‘zgartirish logikasi bilan)
   async update(id: number, updateAdminDto: UpdateAdminDto): Promise<Admin> {
     const admin = await this.findOne(id);
     if (!admin) {

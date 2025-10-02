@@ -44,4 +44,7 @@ export class CreateAdminDto {
     @IsBoolean()
     @IsOptional()
     is_active?: boolean = true;
+
+    @IsString()
+    role?: string;
 }

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -27,6 +27,16 @@ export class AuthService {
 
     async signup(createAdminDto: CreateAdminDto) {
         const { email, password, ...rest } = createAdminDto;
+        const { role } = createAdminDto;
+            if (role) {
+              if (role !== "SUPERADMIN") {
+                throw new BadRequestException("Iltimos role ni togri kiriting!");
+              }
+              const existsSuperAdmin = await this.adminRepo.findOne({ where: { role } });
+              if (existsSuperAdmin) {
+                throw new BadRequestException("Super admin faqat bitta bolishi mumkin");
+              }
+            }
 
         const existsEmail = await this.adminRepo.findOne({ where: { email } });
         if (existsEmail) {
