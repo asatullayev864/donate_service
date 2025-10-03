@@ -23,6 +23,6 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],   // 👈 Strategy ni provider sifatida qo‘shamiz
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule { }

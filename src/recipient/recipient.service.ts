@@ -13,7 +13,7 @@ export class RecipientService {
   ) { };
 
   async create(createRecipientDto: CreateRecipientDto): Promise<Recipient> {
-    const { name, full_name, email, password, address } = createRecipientDto;
+    const { name, full_name, email, password, address, role } = createRecipientDto;
     if (!name || !full_name || !email || !password || !address) {
       throw new BadRequestException("Please enter all the information‼️");
     }
@@ -27,6 +27,14 @@ export class RecipientService {
       throw new BadRequestException("Name already exists on the network❌")
     }
 
+    let normalizedRole = "RECIPIENT";
+    if (role) {
+      if (role.toUpperCase() !== "RECIPIENT") {
+        throw new BadRequestException("Role faqat RECIPIENT bo'lishi mumkin❌");
+      }
+      normalizedRole = role.toUpperCase();
+    }
+
     const hashedPassword = await bcrypt.hash(password, 7);
 
     const newRecipient = await this.recipientModel.create({
@@ -34,7 +42,8 @@ export class RecipientService {
       full_name,
       email,
       password: hashedPassword,
-      address
+      address,
+      role: normalizedRole
     });
     return newRecipient;
   }
@@ -61,7 +70,7 @@ export class RecipientService {
       throw new NotFoundException("No information found for this ID❌");
     }
 
-    const { name, email, currentPassword, new_password } = updateRecipientDto;
+    const { name, email, currentPassword, new_password, role } = updateRecipientDto;
     if (name) {
       const existsName = await this.recipientModel.findOne({ where: { name } });
       if (existsName && existsName.id !== id) {
@@ -74,6 +83,15 @@ export class RecipientService {
         throw new BadRequestException("This email is busy❗️");
       }
     }
+
+    let normalizedRole = "RECIPIENT";
+    if (role) {
+      if (role.toUpperCase() !== "RECIPIENT") {
+        throw new BadRequestException("Role faqat RECIPIENT bo'lishi mumkin❌");
+      }
+      normalizedRole = role.toUpperCase();
+    }
+
     if (currentPassword && new_password) {
       const verifyPassword = await bcrypt.compare(currentPassword, recipient.password);
       if (!verifyPassword) {
@@ -81,6 +99,7 @@ export class RecipientService {
       }
       const hashedPassword = await bcrypt.hash(new_password, 7);
       updateRecipientDto.password = hashedPassword;
+      updateRecipientDto.role = normalizedRole;
     }
 
     await this.recipientModel.update(updateRecipientDto, { where: { id } });

@@ -7,6 +7,7 @@ interface IAdminAttr {
     password: string;
     is_creator?: boolean;
     is_active?: boolean;
+    role?: string;
 }
 
 @Table({ tableName: "admins" })
@@ -84,5 +85,5 @@ export class Admin extends Model<Admin, IAdminAttr> {
         allowNull: false,
         defaultValue: "ADMIN",
     })
-    declare role: string;
+    declare role?: string;
 }

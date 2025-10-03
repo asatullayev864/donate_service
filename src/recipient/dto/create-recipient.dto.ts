@@ -1,4 +1,4 @@
-import { IsString, IsEmail, MinLength, MaxLength } from "class-validator";
+import { IsString, IsEmail, MinLength, MaxLength, IsOptional, IsIn } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateRecipientDto {
@@ -12,7 +12,7 @@ export class CreateRecipientDto {
     name: string;
 
     @ApiProperty({
-        description: "Recipientning to‘liq ismi",
+        description: "Recipientning to'liq ismi",
         maxLength: 50,
         example: "Jo'rabek Xolmatov"
     })
@@ -30,7 +30,7 @@ export class CreateRecipientDto {
     email: string;
 
     @ApiProperty({
-        description: "Parol (kamida 6 belgidan iborat bo‘lishi kerak)",
+        description: "Parol (kamida 6 belgidan iborat bo'lishi kerak)",
         minLength: 6,
         example: "mypassword123"
     })
@@ -46,4 +46,16 @@ export class CreateRecipientDto {
     @IsString()
     @MaxLength(255)
     address: string;
+
+    @ApiProperty({
+        description: "Foydalanuvchi roli",
+        example: "RECIPIENT",
+        required: false
+    })
+    @IsOptional()
+    @IsIn(
+        ["RECIPIENT"],
+        { message: "Role faqat RECIPIENT bo'lishi mumkin" }
+    )
+    role?: string;
 }

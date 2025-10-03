@@ -9,6 +9,7 @@ interface IRecipientAttr {
     email: string;
     password: string;
     address: string;
+    role?: string; // role optional
 }
 
 @Table({ tableName: "recipient" })
@@ -21,10 +22,7 @@ export class Recipient extends Model<Recipient, IRecipientAttr> {
     })
     declare id: number;
 
-    @ApiProperty({
-        example: "jurabek01",
-        description: "Foydalanuvchi login nomi"
-    })
+    @ApiProperty({ example: "jurabek01", description: "Foydalanuvchi login nomi" })
     @Column({
         type: DataType.STRING(50),
         allowNull: false,
@@ -32,20 +30,14 @@ export class Recipient extends Model<Recipient, IRecipientAttr> {
     })
     declare name: string;
 
-    @ApiProperty({
-        example: "Jo'rabek Abdullayev",
-        description: "Foydalanuvchining to'liq ismi"
-    })
+    @ApiProperty({ example: "Jo'rabek Abdullayev", description: "Foydalanuvchining to'liq ismi" })
     @Column({
         type: DataType.STRING(50),
         allowNull: false,
     })
     declare full_name: string;
 
-    @ApiProperty({
-        example: "jurabek@mail.com",
-        description: "Foydalanuvchi email manzili"
-    })
+    @ApiProperty({ example: "jurabek@mail.com", description: "Foydalanuvchi email manzili" })
     @Column({
         type: DataType.STRING(50),
         allowNull: false,
@@ -53,30 +45,29 @@ export class Recipient extends Model<Recipient, IRecipientAttr> {
     })
     declare email: string;
 
-    @ApiProperty({
-        example: "P@ssw0rd123",
-        description: "Foydalanuvchi paroli (hashed saqlanadi)"
-    })
+    @ApiProperty({ example: "P@ssw0rd123", description: "Foydalanuvchi paroli (hashed saqlanadi)" })
     @Column({
         type: DataType.STRING,
         allowNull: false,
     })
     declare password: string;
 
-    @ApiProperty({
-        example: "Toshkent, Yunusobod",
-        description: "Foydalanuvchining manzili"
-    })
+    @ApiProperty({ example: "Toshkent, Yunusobod", description: "Foydalanuvchining manzili" })
     @Column({
         type: DataType.STRING,
         allowNull: false,
     })
     declare address: string;
 
-    @ApiProperty({
-        type: () => [Card],
-        description: "Foydalanuvchiga tegishli kartalar ro'yxati",
+    @ApiProperty({ example: "recipient", description: "Foydalanuvchi roli" })
+    @Column({
+        type: DataType.STRING,
+        allowNull: false,
+        defaultValue: "RECIPIENT",
     })
+    declare role: string;
+
+    @ApiProperty({ type: () => [Card], description: "Foydalanuvchiga tegishli kartalar ro'yxati" })
     @HasMany(() => Card)
     cards: Card[];
 

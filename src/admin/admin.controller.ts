@@ -10,6 +10,7 @@ import { Admin } from './models/admin.model';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { JwtRoleGuard } from '../common/guards/role.guard';
+import { SelfGuard } from '../common/guards/self.guard';
 
 @ApiTags('Admin')
 @Controller("admin")
@@ -39,7 +40,7 @@ export class AdminController {
 
   // SUPERADMIN ham, ADMIN ham bitta adminni ko‘ra oladi
   @Get(":id")
-  @UseGuards(JwtAuthGuard, JwtRoleGuard)
+  @UseGuards(JwtAuthGuard, JwtRoleGuard, SelfGuard)
   @Roles('SUPERADMIN', 'ADMIN')
   @ApiOperation({ summary: "Bitta adminni olish (SUPERADMIN, ADMIN)" })
   @ApiResponse({ status: 200, description: "Topilgan admin", type: Admin })
@@ -50,7 +51,7 @@ export class AdminController {
 
   // Faqat SUPERADMIN yangilashi mumkin
   @Patch(":id")
-  @UseGuards(JwtAuthGuard, JwtRoleGuard)
+  @UseGuards(JwtAuthGuard, JwtRoleGuard, SelfGuard)
   @Roles('SUPERADMIN')
   @ApiOperation({ summary: "Adminni yangilash (faqat SUPERADMIN)" })
   @ApiResponse({ status: 200, description: "Admin muvaffaqiyatli yangilandi", type: Admin })
@@ -63,7 +64,7 @@ export class AdminController {
   // Faqat SUPERADMIN o‘chira oladi
   @Delete(":id")
   @UseGuards(JwtAuthGuard, JwtRoleGuard)
-  @Roles('SUPERADMIN')
+  @Roles('SUPERADMIN', 'ADMIN')
   @ApiOperation({ summary: "Adminni o'chirish (faqat SUPERADMIN)" })
   @ApiResponse({ status: 200, description: "Admin o'chirildi" })
   @ApiResponse({ status: 404, description: "Admin topilmadi ❌" })
