@@ -27,9 +27,9 @@ export class AuthService {
 
     async signup(createAdminDto: CreateAdminDto) {
         const { email, password, role, ...rest } = createAdminDto;
-        const normalizedRole = role ? role.toUpperCase() : "ADMIN";
-        if (role !== "SUPERADMIN" && role !== "ADMIN") {
-            throw new Error("Noto'g'ri rol. Faqat SUPERADMIN yoki ADMIN bo'lishi mumkin.");
+        const normalizedRole = role ? role.toUpperCase() : "SUPERADMIN";
+        if (role !== "SUPERADMIN") {
+            throw new BadRequestException("Noto'g'ri rol. Faqat SUPERADMIN bo'lishi mumkin.");
         }
         const existsSuperAdmin = await this.adminRepo.findOne({ where: { role } });
         if (existsSuperAdmin && existsSuperAdmin.role === "SUPERADMIN") {
@@ -49,6 +49,8 @@ export class AuthService {
             role: normalizedRole,
             ...rest
         });
+        console.log("Authga kirdi");
+
 
         return {
             message: "Success",
@@ -59,7 +61,8 @@ export class AuthService {
     async signin(signinAdminDto: SigninAdminDto) {
 
         const { email, password } = signinAdminDto;
-
+        console.log("Authga kirdi");
+        
         const admin = await this.adminRepo.findOne({ where: { email } });
         if (!admin) {
             throw new UnauthorizedException("Email noto'g'ri");

@@ -2,13 +2,14 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from "@n
 import { RecipientService } from "./recipient.service";
 import { CreateRecipientDto } from "./dto/create-recipient.dto";
 import { UpdateRecipientDto } from "./dto/update-recipient.dto";
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from "@nestjs/swagger";
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiBearerAuth } from "@nestjs/swagger";
 import { Recipient } from "./models/recipient.model";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { JwtRoleGuard } from "../common/guards/role.guard";
 import { Roles } from "../common/decorators/roles.decorator";
 import { SelfGuard } from "../common/guards/self.guard";
 
+@ApiBearerAuth()
 @ApiTags("Recipients")
 @Controller("recipient")
 export class RecipientController {

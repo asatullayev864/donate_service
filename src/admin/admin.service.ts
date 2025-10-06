@@ -19,12 +19,8 @@ export class AdminService {
 
     const { role } = createAdminDto;
     if (role) {
-      if (role === "SUPERADMIN") {
+      if (role !== "ADMIN") {
         throw new BadRequestException("Iltimos role ni togri kiriting!");
-      }
-      const existsSuperAdmin = await this.adminModel.findOne({ where: { role } });
-      if (existsSuperAdmin) {
-        throw new BadRequestException("Super admin faqat bitta bolishi mumkin");
       }
     }
     const hashedPassword = await bcrypt.hash(createAdminDto.password, 7);

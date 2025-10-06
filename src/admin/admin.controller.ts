@@ -2,7 +2,7 @@ import {
   Controller, Get, Post, Body, Patch, Param, Delete,
   UseGuards
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { UpdateAdminDto } from './dto/update-admin.dto';
@@ -12,6 +12,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { JwtRoleGuard } from '../common/guards/role.guard';
 import { SelfGuard } from '../common/guards/self.guard';
 
+@ApiBearerAuth()
 @ApiTags('Admin')
 @Controller("admin")
 export class AdminController {
@@ -31,7 +32,7 @@ export class AdminController {
   // SUPERADMIN ham, ADMIN ham ko‘ra oladi
   @Get()
   @UseGuards(JwtAuthGuard, JwtRoleGuard)
-  @Roles('SUPERADMIN', 'ADMIN')
+  @Roles('SUPERADMIN')
   @ApiOperation({ summary: "Barcha adminlarni olish (SUPERADMIN, ADMIN)" })
   @ApiResponse({ status: 200, description: "Adminlar ro'yxati", type: [Admin] })
   findAll() {
@@ -63,8 +64,8 @@ export class AdminController {
 
   // Faqat SUPERADMIN o‘chira oladi
   @Delete(":id")
-  @UseGuards(JwtAuthGuard, JwtRoleGuard)
-  @Roles('SUPERADMIN', 'ADMIN')
+  // @UseGuards(JwtAuthGuard, JwtRoleGuard)
+  // @Roles('SUPERADMIN', 'ADMIN')
   @ApiOperation({ summary: "Adminni o'chirish (faqat SUPERADMIN)" })
   @ApiResponse({ status: 200, description: "Admin o'chirildi" })
   @ApiResponse({ status: 404, description: "Admin topilmadi ❌" })

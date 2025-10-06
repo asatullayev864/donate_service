@@ -16,6 +16,11 @@ async function start() {
     .setDescription('The donate service API description')
     .setVersion('v1')
     .addTag('Nest, bcrypt, swagger, validation')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'Bearer',
+      in: 'Header'
+    })
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, documentFactory);

@@ -2,9 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { SocialMediaService } from './social_media.service';
 import { CreateSocialMediaDto } from './dto/create-social_media.dto';
 import { UpdateSocialMediaDto } from './dto/update-social_media.dto';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { SocialMedia } from './models/social_media.model';
 
+@ApiBearerAuth()
 @ApiTags('Social Media')
 @Controller('social-media')
 export class SocialMediaController {
