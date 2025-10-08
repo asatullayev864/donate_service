@@ -17,6 +17,13 @@ import { Category } from './category/models/category.model';
 import { ShopModule } from './shop/shop.module';
 import { Shop } from './shop/models/shop.model';
 import { UserModule } from './user/user.module';
+import { DonateModule } from './donate/donate.module';
+import { OrderModule } from './order/order.module';
+import { PaymentsModule } from './payments/payments.module';
+import { Donate } from './donate/models/donate.model';
+import { Order } from './order/models/order.model';
+import { Payment } from './payments/models/payment.model';
+import { User } from './user/models/user.model';
 
 @Module({
   imports: [
@@ -31,7 +38,7 @@ import { UserModule } from './user/user.module';
       username: process.env.PG_USER,
       password: process.env.PG_PASSWORD,
       database: process.env.PG_DATABASE,
-      models: [Recipient, Card, SocialMedia, RecipientSocial, Admin, Category, Shop],
+      models: [Recipient, Card, SocialMedia, RecipientSocial, Admin, Category,User, Shop, Donate, Order, Payment],
       autoLoadModels: true,
       logging: false,
       sync: { alter: true },
@@ -44,7 +51,10 @@ import { UserModule } from './user/user.module';
     SocialMediaModule,
     CategoryModule,
     ShopModule,
-    UserModule
+    UserModule,
+    DonateModule,
+    OrderModule,
+    PaymentsModule
   ],
   controllers: [],
   providers: [],

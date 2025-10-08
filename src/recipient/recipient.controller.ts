@@ -15,10 +15,9 @@ import { SelfGuard } from "../common/guards/self.guard";
 export class RecipientController {
   constructor(private readonly recipientService: RecipientService) { }
 
-  // ❗ CREATE – faqat ADMIN yaratishi mumkin
   @Post()
   @UseGuards(JwtAuthGuard, JwtRoleGuard)
-  @Roles("ADMIN")
+  @Roles("ADMIN", "SUPERADMIN")
   @ApiOperation({ summary: "Yangi recipient yaratish" })
   @ApiResponse({ status: 201, description: "Recipient muvaffaqiyatli yaratildi✅", type: Recipient })
   @ApiResponse({ status: 400, description: "Bunday email yoki name allaqachon mavjud❌" })
@@ -27,7 +26,6 @@ export class RecipientController {
     return this.recipientService.create(createRecipientDto);
   }
 
-  // ❗ GET ALL – faqat ADMIN
   @Get()
   @UseGuards(JwtAuthGuard, JwtRoleGuard)
   @Roles("ADMIN", "SUPERADMIN")
@@ -38,7 +36,6 @@ export class RecipientController {
     return this.recipientService.findAll();
   }
 
-  // ❗ GET ONE – ADMIN yoki o‘z recipient
   @Get(':id')
   @UseGuards(JwtAuthGuard, JwtRoleGuard, SelfGuard)
   @Roles("SUPERADMIN", "ADMIN", "RECIPIENT")
@@ -50,7 +47,6 @@ export class RecipientController {
     return this.recipientService.findOne(+id);
   }
 
-  // ❗ PATCH – ADMIN yoki o‘z recipient
   @Patch(':id')
   @UseGuards(JwtAuthGuard, JwtRoleGuard, SelfGuard)
   @Roles("SUPERADMIN", "ADMIN", "RECIPIENT")
@@ -64,7 +60,6 @@ export class RecipientController {
     return this.recipientService.update(+id, updateRecipientDto);
   }
 
-  // ❗ DELETE – faqat ADMIN
   @Delete(':id')
   @UseGuards(JwtAuthGuard, JwtRoleGuard)
   @Roles("ADMIN", "SUPERADMIN")

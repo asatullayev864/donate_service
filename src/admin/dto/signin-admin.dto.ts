@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class SigninAdminDto {
     @ApiProperty({
-        example: 'admin@example.com',
+        example: 'superadmin@example.com',
         description: "Adminning email manzili",
         required: true,
     })
@@ -11,7 +11,7 @@ export class SigninAdminDto {
     email: string;
 
     @ApiProperty({
-        example: 'StrongPassword123!',
+        example: 'SuperSecret123!',
         description: "Adminning paroli (kamida 6 ta belgidan iborat)",
         required: true,
         minLength: 6,
