@@ -54,6 +54,11 @@ export class Admin extends Model<Admin, IAdminAttr> {
     })
     declare password: string;
 
+    @Column({
+        type: DataType.STRING(2000),
+    })
+    declare refresh_token: string | null;
+
     @ApiProperty({
         example: true,
         description: "Admin yaratgan asosiy foydalanuvchi yoki yo'qligini bildiradi"

@@ -24,6 +24,7 @@ import { Donate } from './donate/models/donate.model';
 import { Order } from './order/models/order.model';
 import { Payment } from './payments/models/payment.model';
 import { User } from './user/models/user.model';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -54,7 +55,8 @@ import { User } from './user/models/user.model';
     UserModule,
     DonateModule,
     OrderModule,
-    PaymentsModule
+    PaymentsModule,
+    // MailModule
   ],
   controllers: [],
   providers: [],

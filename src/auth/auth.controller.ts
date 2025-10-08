@@ -1,10 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAdminDto } from '../admin/dto/create-admin.dto';
 import { SigninAdminDto } from '../admin/dto/signin-admin.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import type { Response } from 'express';
 
-@ApiTags('Auth') // Swagger bo'lim nomi
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
@@ -40,7 +41,10 @@ export class AuthController {
     status: 401,
     description: "Email yoki parol noto'g'ri"
   })
-  signin(@Body() signinAdminDto: SigninAdminDto) {
-    return this.authService.signin(signinAdminDto);
+  signin(
+    @Body() signinAdminDto: SigninAdminDto,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    return this.authService.signin(signinAdminDto, res);
   }
 }

@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateAdminDto } from '../admin/dto/create-admin.dto';
 import { Admin } from '../admin/models/admin.model';
 import { SigninAdminDto } from '../admin/dto/signin-admin.dto';
+import { Response } from "express";
 
 @Injectable()
 export class AuthService {
@@ -13,15 +14,26 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ) { }
 
-    private async generateToken(admin: Admin) {
+    private async generateTokens(admin: Admin) {
         const payload = {
             id: admin.id,
             email: admin.email,
             role: admin.role
         };
 
+        const [accessToken, refreshToken] = await Promise.all([
+            this.jwtService.sign(payload, {
+                secret: process.env.ACCESS_TOKEN_KEY,
+                expiresIn: process.env.ACCESS_TOKEN_TIME,
+            }),
+            this.jwtService.sign(payload, {
+                secret: process.env.REFRESH_TOKEN_KEY,
+                expiresIn: process.env.REFRESH_TOKEN_TIME,
+            }),
+        ]);
+
         return {
-            token: this.jwtService.sign(payload)
+            accessToken, refreshToken
         };
     }
 
@@ -58,10 +70,9 @@ export class AuthService {
         }
     }
 
-    async signin(signinAdminDto: SigninAdminDto) {
+    async signin(signinAdminDto: SigninAdminDto, res: Response) {
 
         const { email, password } = signinAdminDto;
-        console.log("Authga kirdi");
         
         const admin = await this.adminRepo.findOne({ where: { email } });
         if (!admin) {
@@ -73,6 +84,27 @@ export class AuthService {
             throw new UnauthorizedException("Password noto'g'ri");
         }
 
-        return this.generateToken(admin);
+        const { accessToken, refreshToken } = await this.generateTokens(admin);
+
+        const hashedRefreshToken = await bcrypt.hash(refreshToken, 7);
+        admin.refresh_token = hashedRefreshToken;
+        await admin.save();
+
+        res.cookie("refreshToken", refreshToken, {
+            maxAge: Number(process.env.COOKIE_TIME),
+            httpOnly: true
+        });
+
+        return {
+            message: "User logged in",
+            id: admin.id,
+            accessToken,
+        };
     }
+
+    // async signout(refreshToken: string, res: Response) {
+    //     const userData = await this.jwtService.verify(refreshToken, {
+    //         secret: process.env.
+    //     })
+    // }
 }
